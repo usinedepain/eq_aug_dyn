@@ -1,4 +1,8 @@
-## Description of files in the package
+# Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
+
+This repository contains code used for the experiments in the paper ... . 
+
+## Description of files in the repository
 * models.py contain the code for building the models used in the experiment. 
 It is built around an abstract class ProjectNet, which is instantiated for the three different group. 
 The ProjectNet stores a number of layers and a method for projecting all layers (and gradients) onto the space E.
@@ -31,7 +35,12 @@ have the same general appearance). To evaluate the permutation experiment, run
    
 ```
 
+### Disclaimers
+The code has been modified slightly for release. In particular, we ran our code on a cluster to perform the experiments in the paper, which required some minor changes. We do not expect the code to behave differently (apart from the random initializations), but guarantees cannot be given.
+
 Note that in particular the translation and rotation experiments will take quite some time, in particular when repeating them 30 times. The code has not been optimized in any way, and our experiments took around 75 errors in total. For exploratory tests, we recommend using the permutation examples.
 
 The experiments will default to be performed on the data downloaded with the repository, which is the data we used. The datasets classes are made ready to generate new sets of data if you wish to do so. See further documentation in datasets.py.
+
+
 
