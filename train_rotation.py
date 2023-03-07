@@ -42,7 +42,6 @@ if __name__ == '__main__':
         
         # define models
         print("Experiment "+ str(run) + " started")
-        name = 'res_rot_0'+str(run)
         eqmodel = RotationNet(ns=[1,32,32,16,2],n=n, device = 'cuda', fully_connected=False)
         
             
@@ -55,7 +54,7 @@ if __name__ == '__main__':
         nonaugmodel = eqmodel.copy()
         
     
-        shps = SimpleShapes(n,3000,directory = 'simpshape',device ='cuda')
+        shps = SimpleShapes(n,nbr_samples=3000,directory = 'simpshape',device ='cuda')
         batch_size = 25
         loader = torch.utils.data.DataLoader(shps,batch_size=batch_size)
         
@@ -80,10 +79,12 @@ if __name__ == '__main__':
         
         #overwrite results
         for tp in  ['eq','aug','nonaug']:
-            os.remove(os.path.join(name,tp))
+            fln = os.path.join(name,tp)
+            if os.path.exists(fln):
+                os.remove(fln)
         
             
         #mx,mn = empirical_equivariance(model,loader,25)'
-        for epochs in range(3):
+        for epochs in range(50):
             cluster_epoch(config)   
 

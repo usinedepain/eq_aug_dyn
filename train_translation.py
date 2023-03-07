@@ -69,10 +69,12 @@ if __name__ == '__main__':
              os.mkdir(name)
         #overwrite results
         for tp in  ['eq','aug','nonaug']:
-            os.remove(os.path.join(name,tp))
+            fln = os.path.join(name,tp)
+            if os.path.exists(fln):
+                os.remove(fln)
             
 
-        for epochs in range(2):
+        for epochs in range(50):
             cluster_epoch(config)
 
  
