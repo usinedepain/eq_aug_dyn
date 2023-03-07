@@ -1,6 +1,6 @@
 # Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
 
-This repository contains code used for the experiments in the paper ... . 
+This repository contains code used for the experiments in the paper ... . It is mainly released for transparency and reproducibility purposes. Should you however find this code useful for your research, please cite us.
 
 ## Description of files in the repository
 * models.py contain the code for building the models used in the experiment. 
@@ -12,8 +12,6 @@ The ProjectNet stores a number of layers and a method for projecting all layers 
 * train_permutation.py, train_translation.py, train_rotation.py are training scripts for repeating the experiments in the paper
 * simpshape is the dataset used in the rotation experiment.
 * stochblock is the dataset used for the permutation experiment. 
-
-The datasets has a total size of about 200 MB.
 
 
 ## Running experiments
