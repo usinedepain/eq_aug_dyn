@@ -1,6 +1,6 @@
 # Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
 
-This repository contains code used for the experiments in the [paper]{https://arxiv.org/abs/number}
+This repository contains code used for the experiments in the [paper](https://arxiv.org/abs/number)
 
 ```
 @article{flinth2023optEqAug,
