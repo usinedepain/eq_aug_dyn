@@ -1,6 +1,18 @@
 # Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
 
-This repository contains code used for the experiments in the paper ... . It is mainly released for transparency and reproducibility purposes. Should you however find this code useful for your research, please cite us.
+This repository contains code used for the experiments in the [paper]{https://arxiv.org/abs/number}
+
+```
+@article{flinth2023optEqAug,
+  title={Optimization Dynamics of Equivariant and Augmented Neural Networks},
+  author={Flinth, Axel and Ohlsson, Fredrik},
+  journal={arXiv:NUMBER},
+  year={2023}
+}
+
+```
+
+It is mainly released for transparency and reproducibility purposes. Should you find this code useful for your research, please cite the above paper.
 
 ## Description of files in the repository
 * models.py contain the code for building the models used in the experiment. 
