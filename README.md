@@ -34,7 +34,7 @@ have the same general appearance). To evaluate the permutation experiment, run
 ```
 
 ### Disclaimers
-The code has been modified slightly for release. In particular, we ran our code on a cluster to perform the experiments in the paper, which required some minor changes. We do not expect the code to behave differently (apart from the random initializations), but guarantees cannot be given.
+The experiments in the paper were performed on a cluster. Therefore, some aspects of the code, such as the training scripts, differs very slightly from the code released here. There should be no difference in performance.
 
 Note that in particular the translation and rotation experiments will take quite some time, in particular when repeating them 30 times. The code has not been optimized in any way, and our experiments took around 75 errors in total. For exploratory tests, we recommend using the permutation examples.
 
