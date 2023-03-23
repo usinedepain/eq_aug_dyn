@@ -35,7 +35,7 @@ Augnumber decides how many passes should be made over the data for the augmented
     python train_permutation.py 25 30
 ```
  
-Then, run evalscript.py with one of the key values 'perm', 'trans' or 'rot' as first parameter and nbr_exp as second parameter to produce a figure like the one in the paper (it will be less tidy
+Then, run evalscript.py with one of the key values 'perm', 'trans' or 'rot' as first parameter and nbr_exp as second parameter to produce a figure like the one in the paper (it will be less tidy but
 have the same general appearance). To evaluate the permutation experiment, run
 
 ```
@@ -45,7 +45,7 @@ have the same general appearance). To evaluate the permutation experiment, run
 ### Disclaimers
 The experiments in the paper were performed on a cluster. Therefore, some aspects of the code, such as the training scripts, differs very slightly from the code released here. There should be no difference in performance.
 
-Note that in particular the translation and rotation experiments will take quite some time, in particular when repeating them 30 times. The code has not been optimized in any way, and our experiments took around 75 errors in total. For exploratory tests, we recommend using the permutation examples.
+Note that in particular the translation and rotation experiments will take quite some time, in particular when repeating them 30 times. The code has not been optimized in any way, and our experiments took around 75 GPU hours in total. For exploratory tests, we recommend using the permutation examples.
 
 The experiments will default to be performed on the data downloaded with the repository, which is the data we used. The datasets classes are made ready to generate new sets of data if you wish to do so. See further documentation in datasets.py.
 
