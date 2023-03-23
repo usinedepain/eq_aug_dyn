@@ -32,18 +32,14 @@ To run an experiment, run one of the training scripts train_permutation.py, trai
 Augnumber decides how many passes should be made over the data for the augmented run (in the experiments in the paper, these were set to 25). I.e., to run the permutation experiment as in the paper, run
 
 ```
-
     python train_permutation.py 25 30
-    
 ```
  
 Then, run evalscript.py with one of the key values 'perm', 'trans' or 'rot' as first parameter and nbr_exp as second parameter to produce a figure like the one in the paper (it will be less tidy
 have the same general appearance). To evaluate the permutation experiment, run
 
 ```
-
    python evalscript.py perm 30
-   
 ```
 
 ### Disclaimers
