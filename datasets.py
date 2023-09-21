@@ -319,6 +319,23 @@ class Shift(torch.nn.Module):
         s1 = randint(0,self.n)
         s2 = randint(0,self.n)
         return torch.roll(x,dims=(-2,-1),shifts=(s1,s2))
+    
+class Xshift(torch.nn.Module):
+        
+    """
+        A class for randomly shifting images in x-directoin. For NxN -images, set n parameter equal to N 
+    """
+    
+    def __init__(self,n):
+        super(Xshift,self).__init__()
+        self.n = n
+    
+    def forward(self,x):
+        
+        s = randint(0,self.n)
+        return torch.roll(x,dims=(-1),shifts=(s))
+    
+    
 
 class Rotate(torch.nn.Module):
     
@@ -329,14 +346,16 @@ class Rotate(torch.nn.Module):
         image masks are rotated in the correct manenr
     """
     
-    def __init__(self,n):
+    def __init__(self,n, new = False):
         super(Rotate,self).__init__()
         self.n = n
         self.idx = 0
         self.r = 1
+        self.new = new # to globally override storing mechanism
     def forward(self,x, new = False):
         
-        
+        if self.new:
+            new=self.new
         # discretely rotates image. 
         # assumes that x is in form [batch,dim,n**2]
      
@@ -369,6 +388,24 @@ class Rotate(torch.nn.Module):
             x = x.flip(-2)
         
         return x.reshape(b,-1,self.n**2)
+    
+
+class RotoShift(torch.nn.Module):
+    
+    """
+        A class for simultaneous random rotation and translations images. For NxN -images, set n parameter equal to N 
+        
+        Do not use for masks, will generate a new rotoshift each time
+    """
+    
+    def __init__(self, n):
+        super(RotoShift,self).__init__()
+        self.shift = Shift(n)
+        self.rot = Rotate(n,True)
+    
+    def forward(self,x):
+        x = self.shift(x)
+        return self.rot(x)
             
 def get_MNIST_loader(batch_size,n=14, root = 'mnist'):
     

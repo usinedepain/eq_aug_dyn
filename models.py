@@ -1,6 +1,7 @@
 import torch 
 import numpy as np
 from abc import abstractmethod
+from torch.fft import fft2, ifft2, fft, ifft # for convolution-related projections
 
 class ProjectNet(torch.nn.Module):
     
@@ -197,7 +198,7 @@ class PermutationAdjNet(ProjectNet):
             
             #fully connected layers
             self.fclayers = torch.nn.ParameterList()
-            self.bn = torch.nn.BatchNorm1d(ms[0], device= self.device) #
+            self.bn = torch.nn.LayerNorm(ms[0], device= self.device,elementwise_affine=False) #
         
         # initialize the matrices with normal random coefficients
         self.reset()
@@ -218,7 +219,7 @@ class PermutationAdjNet(ProjectNet):
             cpy.ms = self.ms
             cpy.fclayers = torch.nn.ParameterList()
             cpy.fc_nonlin = self.fc_nonlin
-            cpy.bn = torch.nn.BatchNorm1d(self.ms[0], device = self.device)
+            cpy.bn = torch.nn.LayerNorm(self.ms[0], device = self.device,elementwise_affine=False)
             
             for k in range(1,len(self.fclayers)+1):
                 lin = torch.nn.Parameter(torch.zeros_like(self.fclayers[k-1].data))
@@ -344,11 +345,15 @@ class PermutationAdjNet(ProjectNet):
         
         return A.reshape(A.shape[0],self.ns[-1],1,n**2)
     
+
+
+
+    
 class  TranslationNet(ProjectNet):
 
     """
         class TranslationNet
-            A Net for processing R^{n,n}- features in a permutation-equivariant
+            A Net for processing R^{n,n}- features in a translation-equivariant
             manner.
     """   
     
@@ -373,7 +378,7 @@ class  TranslationNet(ProjectNet):
             ms.append(10)
             self.fclayers = torch.nn.ParameterList()
 
-            self.bn = torch.nn.BatchNorm1d(ms[0], device= self.device) #
+            self.bn = torch.nn.LayerNorm(ms[0], device= self.device, elementwise_affine=False) #
         
         # initialize the matrices with normal random coefficients
         self.reset()
@@ -424,7 +429,6 @@ class  TranslationNet(ProjectNet):
                 lin = torch.nn.Parameter(torch.zeros_like(self.fclayers[k-1].data))
                 cpy.fclayers.append(lin)
                 cpy.fclayers[k-1].data = self.fclayers[k-1].data.clone().detach().requires_grad_(True)
-                #cpy.fclayers[k-1].bias.data = self.fclayers[k-1].bias.data.clone().detach().requires_grad_(True)
         
         return cpy
     
@@ -451,8 +455,7 @@ class  TranslationNet(ProjectNet):
         basis = np.zeros((n,n,n,n,n,n))
         
         
-        for i in range(n):
-            
+        for i in range(n):           
             for j in range(n):
                 for k in range(n):
                     for l in range(n):
@@ -468,13 +471,65 @@ class  TranslationNet(ProjectNet):
     
     def project(self,A):
         
-       B = super().project_with_matrix(A)
+       m1 = A.shape[0]
+       m2 = A.shape[1]
+
+       # calculate F^TAF, where F is Fourier operator
+       A = ifft2(fft2(A.reshape(m1,m2,self.n,self.n,self.n,self.n),dim=(-2,-1)),dim=(-4,-3))
        
-       return B.reshape(B.shape[0],B.shape[1],self.n**2,self.n**2)
+       # extract diagonal DA
+       A = torch.diag_embed(torch.diagonal(A.reshape(m1,m2,self.n**2,self.n**2),dim1=-1,dim2=-2))
+       
+       # Calculate F*DA*F^T and return
+       A = fft2(ifft2((A).reshape(m1,m2,self.n,self.n,self.n,self.n),dim=(-2,-1)),dim=(-4,-3))
+       
+       return torch.real(A.reshape(m1,m2,self.n**2,self.n**2)).contiguous()
     
     def project_light(self,A):
         # To project the invarizing layers, we only need to take the mean.
         return A.mean(-1,keepdim=True)*torch.ones_like(A)            
+
+class OneDTranslationNet(TranslationNet):
+    
+    """
+        class TranslationNet
+            A Net for processing R^{n,n}- features in a manner 
+            equivariant to translations in x-direction.
+    """  
+    
+    def __init__(self,ns,n, device = 'cpu', fully_connected=False, ms = []):
+        super(OneDTranslationNet,self).__init__(ns, n, device, fully_connected)
+        
+    
+    def project(self,A):
+
+        
+        m1 = A.shape[0]
+        m2 = A.shape[1]
+        
+        # calculate F^TAF, where F is Fourier operator in one direction
+        A = ifft(fft(A.reshape(m1,m2,self.n,self.n,self.n,self.n),dim=-1),dim=-3)
+        
+        # extract partial diagonals DA
+        A = torch.diag_embed(torch.diagonal(A,dim1=-1,dim2=-3),dim1=-1,dim2=-3)
+        
+        # Calculate F*DA*F^T and return
+        A = fft(ifft(A.reshape(m1,m2,self.n,self.n,self.n,self.n),dim=-1),dim=-3)
+        
+        return torch.real(A.reshape(m1,m2,self.n**2,self.n**2)).contiguous()
+    def project_light(self,A):
+          # To project the invarizing layers, we only need to take the mean in x-direction
+          
+          m1 = A.shape[0]
+          m2 = A.shape[1]
+          
+          B = A.reshape(m1,m2,1,self.n,self.n).mean(-1,keepdim=True)
+          B = B* torch.ones_like(A.reshape(m1,m2,1,self.n,self.n))
+          return B.reshape(m1,m2,1,self.n**2)
+
+
+        
+
 
 class RotationNet(TranslationNet):
     
@@ -496,17 +551,29 @@ class RotationNet(TranslationNet):
         # last non-linearity 
         self.last_nonlin = torch.nn.LeakyReLU()
         
-        self.bn = torch.nn.BatchNorm1d(2,device=device)
-        
-        self.output_nonlin = torch.nn.Sigmoid()
+        if not fully_connected:
+            self.bn = torch.nn.LayerNorm(2, device= self.device,elementwise_affine=False)  
+            self.output_nonlin = torch.nn.Sigmoid()
         
         
     
     def forward(self,x):
-        x = x.unsqueeze(1)
-        x = super().forward(x)
-        x = self.bn(x)
-        return self.output_nonlin(x)
+        if not self.fully_connected:
+            x = x.unsqueeze(1)
+        x = super().forward(x) # first layers are handled by super class.
+                                # this includes the fully connected layers if fully_connected
+        if not self.fully_connected:
+            # if not fully connected, need to handle final layer a bit differently
+            x = torch.transpose(x,-1,-2)
+            x = self.bn(x)
+            x = torch.transpose(x,-1,-2)
+            x = self.output_nonlin(x)
+
+        
+        
+        return x
+    
+    
     def project(self,A):
         
         A = A.reshape((A.shape[0],A.shape[1],self.n,self.n,self.n,self.n))
@@ -525,12 +592,62 @@ class RotationNet(TranslationNet):
         return B.reshape((A.shape[0],A.shape[1],self.n**2,self.n**2))/4.0
     
     def reset(self):
-        for k in range(len(self.layers)):
+            
+        for k in range(len(self.layers)-1):
             self.layers[k].data = 1/(self.n*np.sqrt(self.ns[k]))*torch.randn(self.ns[k+1],self.ns[k],self.n**2,self.n**2).to(self.device)
+           
+            
+
+        if self.fully_connected:
+            self.layers[-1].data = 1/(np.sqrt(self.ms[0]))*(torch.randn(self.ms[0],self.ns[-1],1,1)*torch.ones(self.ms[0],self.ns[-1],1,self.n**2)).to(self.device)
+            for k in range(1, len(self.ms)):
+                lin = torch.nn.Parameter(torch.randn(self.ms[k-1],self.ms[k],device = self.device))
+                lin.data = lin.data*self.n/np.sqrt(self.ms[k-1]*self.ms[k-1])
+                self.fclayers.append(lin)
+        else:
+            self.layers[-1].data = 1/(self.n*np.sqrt(self.ns[k]))*torch.randn(self.ns[-1],self.ns[-2],self.n**2,self.n**2).to(self.device)
            
      
     def project_light(self,A):
-         return self.project(A)
+         if self.fully_connected:
+            A = A.reshape((A.shape[0],A.shape[1],1,1,self.n,self.n))
+            
+            B = A.clone()
+            
+            C = B
+            # Explicitly carry out the integration over the group.
+            for k in range(3):   
+                C = torch.flip(C,[-1])
+                C = torch.transpose(C,-1,-2)
+                B += C
+
+            return B.reshape((A.shape[0],A.shape[1],1,self.n**2))/4.0     
+         else:
+             # If we do not have fully connected things on top, we can project as usual
+             return self.project(A)
     
+class RotoTransNet(RotationNet):
+    
+    # a net both invariant to translations and rotations       
+
+    # the representation is rho(rotation,translation)x = rho(rotation)rho(translation)x
+    # this is not a representation of an abelian group, but it does the job!
+    
+    # accordingly, the projection operator to E is simply the projection onto the 'translation E' and then to the 'rotation-E'
+    def project(self,A):
+        
+        # first project to the translation invariant filter, then project that to the rotation invariant.
+        # this may look to simple, but is OK (see
+        
+        A = TranslationNet.project(self,A)
+        A = super().project(A)
+        return A
+        
+    def project_light(self,A):
+        A = TranslationNet.project_light(self,A)
+        A = super().project_light(A)
+        return A
+        
+
 
         
