@@ -1,7 +1,5 @@
 # Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
 
-![a decorative plot with three curves and a stable point](https://github.com/usinedepain/eq_aug_dyn/master/figure/dynamics_plot.png)
-
 This repository contains code used for the experiments in the [paper](https://arxiv.org/abs/2303.13458)
 
 ```
