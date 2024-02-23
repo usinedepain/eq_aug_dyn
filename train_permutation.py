@@ -1,4 +1,4 @@
-from datasets import adMat, identity
+sfrom datasets import adMat, identity
 import torch
 import os
 from models import PermutationAdjNet
