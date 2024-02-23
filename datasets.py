@@ -319,6 +319,23 @@ class Shift(torch.nn.Module):
         s1 = randint(0,self.n)
         s2 = randint(0,self.n)
         return torch.roll(x,dims=(-2,-1),shifts=(s1,s2))
+    
+class Xshift(torch.nn.Module):
+        
+    """
+        A class for randomly shifting images in x-directoin. For NxN -images, set n parameter equal to N 
+    """
+    
+    def __init__(self,n):
+        super(Xshift,self).__init__()
+        self.n = n
+    
+    def forward(self,x):
+        
+        s = randint(0,self.n)
+        return torch.roll(x,dims=(-1),shifts=(s))
+    
+    
 
 class Xshift(torch.nn.Module):
         
@@ -353,7 +370,12 @@ class Rotate(torch.nn.Module):
     def forward(self,x, new = False):
         
         if self.new:
+<<<<<<< HEAD
             new=self.new        # discretely rotates image. 
+=======
+            new=self.new
+        # discretely rotates image. 
+>>>>>>> refs/remotes/origin/main
         # assumes that x is in form [batch,dim,n**2]
      
         
@@ -385,6 +407,11 @@ class Rotate(torch.nn.Module):
             x = x.flip(-2)
         
         return x.reshape(b,-1,self.n**2)
+<<<<<<< HEAD
+=======
+    
+
+>>>>>>> refs/remotes/origin/main
 class RotoShift(torch.nn.Module):
     
     """

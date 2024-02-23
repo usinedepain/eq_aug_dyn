@@ -1,6 +1,6 @@
 from opt_utils import restrictedSGD_epoch, augmentedSGD_epoch, layer_equivariance,empirical_equivariance, identity, ParameterTracker,cluster_epoch
-from datasets import Shift, get_MNIST_loader
-from models import TranslationNet
+from datasets import Shift, get_MNIST_loader, Xshift
+from models import TranslationNet, OneDTranslationNet
 
 import torch
 import os
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     
         print("Experiment "+ str(run) + " started")
    
-        eqmodel = TranslationNet(ns=[1,32,32],n=14, device = 'cuda', fully_connected=True, ms = [32])
+        eqmodel = OneDTranslationNet(ns=[1,32,32],n=14, device = 'cuda', fully_connected=True, ms = [32])
 
        
         eqmodel.to('cuda')
@@ -38,6 +38,7 @@ if __name__ == '__main__':
         
         
         # start at equivariant point
+        
         eqmodel.project_layers()
         for (k,layer) in enumerate(eqmodel.layers):
             layer.data = layer.data
@@ -48,7 +49,7 @@ if __name__ == '__main__':
             nonaugmodel = eqmodel.copy()
             loader = get_MNIST_loader(25,14, root ='mnist')
         
-        sh = Shift(14)
+        sh = Xshift(14)
 
         config = {}
         config['eqmodel'] =  eqmodel

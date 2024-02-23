@@ -25,7 +25,7 @@ if __name__ == '__main__':
     for run in range(runs):
         name = os.path.join('results', 'res_perm_0'+str(run))
         
-        lr = 1e-5
+        lr = 1e-4
         loss = torch.nn.BCELoss(reduction='mean')
         
         if not os.path.exists(os.path.join(name)):

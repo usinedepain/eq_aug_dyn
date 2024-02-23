@@ -20,7 +20,7 @@ The ProjectNet stores a number of layers and a method for projecting all layers 
 * datasets.py contains code for handling (and generating) data as used in the experiments. 
 * opt_utils contains boiler-plate code for training the MLP:s using the different approaches of the paper. 
 * eval_script.py is a script for evaluating results as stored by the training files.
-* train_permutation.py, train_translation.py, train_rotation.py are training scripts for repeating the experiments in the paper
+* train_permutation.py, train_translation.py, train_rotation.py, train_different_groups.py are training scripts for repeating the experiments in the paper
 * simpshape is the dataset used in the rotation experiment.
 * stochblock is the dataset used for the permutation experiment. 
 
@@ -42,10 +42,25 @@ have the same general appearance). To evaluate the permutation experiment, run
    python evalscript.py perm 30
 ```
 
+### The multiple group experiment
+To run the experiment in the appendix, use the file train_different_groups.py just as above. I.e., to repeat them just as in the paper, run
+
+```
+    python train_different_groups.py 25 30
+```
+
+Then run evalscript.py with key value 'all_t' as first parameter, e.g.
+
+```
+   python evalscript.py all_t 30
+```
+
+The plot windows may appear on top of each other -- move them to inspect them all at once.
+
 ### Disclaimers
 The experiments in the paper were performed on a cluster. Therefore, some aspects of the code, such as the training scripts, differs very slightly from the code released here. There should be no difference in performance.
 
-Note that in particular the translation and rotation experiments will take quite some time, in particular when repeating them 30 times. The code has not been optimized in any way, and our experiments took around 75 GPU hours in total. For exploratory tests, we recommend using the permutation examples.
+Note that in particular the translation and rotation experiments will take quite some time, in particular when repeating them 30 times. The code has not been optimized in any way, and our experiments took around 135 GPU hours in total. For exploratory tests, we recommend using the permutation examples.
 
 The experiments will default to be performed on the data downloaded with the repository, which is the data we used. The datasets classes are made ready to generate new sets of data if you wish to do so. See further documentation in datasets.py.
 
