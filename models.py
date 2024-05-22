@@ -1,11 +1,11 @@
 import torch 
 import numpy as np
 from abc import abstractmethod
-<<<<<<< HEAD
+
 from torch.fft import fft2, ifft2, fft, ifft
-=======
+
 from torch.fft import fft2, ifft2, fft, ifft # for convolution-related projections
->>>>>>> refs/remotes/origin/main
+
 
 class ProjectNet(torch.nn.Module):
     
@@ -222,12 +222,8 @@ class PermutationAdjNet(ProjectNet):
             cpy.ms = self.ms
             cpy.fclayers = torch.nn.ParameterList()
             cpy.fc_nonlin = self.fc_nonlin
-<<<<<<< HEAD
-            cpy.bn = torch.nn.LayerNorm(cpy.ms[0], device= self.device,elementwise_affine=False)            
-=======
             cpy.bn = torch.nn.LayerNorm(self.ms[0], device = self.device,elementwise_affine=False)
             
->>>>>>> refs/remotes/origin/main
             for k in range(1,len(self.fclayers)+1):
                 lin = torch.nn.Parameter(torch.zeros_like(self.fclayers[k-1].data))
                 cpy.fclayers.append(lin)
@@ -385,11 +381,7 @@ class  TranslationNet(ProjectNet):
             ms.append(10)
             self.fclayers = torch.nn.ParameterList()
 
-<<<<<<< HEAD
-            self.bn = torch.nn.LayerNorm(ms[0], device= self.device,elementwise_affine=False) #
-=======
             self.bn = torch.nn.LayerNorm(ms[0], device= self.device, elementwise_affine=False) #
->>>>>>> refs/remotes/origin/main
         
         # initialize the matrices with normal random coefficients
         self.reset()
@@ -498,12 +490,8 @@ class  TranslationNet(ProjectNet):
        # Calculate F*DA*F^T and return
        A = fft2(ifft2((A).reshape(m1,m2,self.n,self.n,self.n,self.n),dim=(-2,-1)),dim=(-4,-3))
        
-<<<<<<< HEAD
-       return torch.real(A.reshape(m1,m2,self.n**2,self.n**2)).contiguous()    
-=======
        return torch.real(A.reshape(m1,m2,self.n**2,self.n**2)).contiguous()
     
->>>>>>> refs/remotes/origin/main
     def project_light(self,A):
         # To project the invarizing layers, we only need to take the mean.
         return A.mean(-1,keepdim=True)*torch.ones_like(A)  
@@ -663,11 +651,7 @@ class RotationNet(TranslationNet):
                 lin.data = lin.data*self.n/np.sqrt(self.ms[k-1]*self.ms[k-1])
                 self.fclayers.append(lin)
         else:
-<<<<<<< HEAD
-            self.layers[-1].data = 1/(self.n*np.sqrt(self.ns[k]))*torch.randn(self.ns[k+1],self.ns[k],self.n**2,self.n**2).to(self.device)
-=======
             self.layers[-1].data = 1/(self.n*np.sqrt(self.ns[k]))*torch.randn(self.ns[-1],self.ns[-2],self.n**2,self.n**2).to(self.device)
->>>>>>> refs/remotes/origin/main
            
      
     def project_light(self,A):
@@ -698,12 +682,8 @@ class RotoTransNet(RotationNet):
     # accordingly, the projection operator to E is simply the projection onto the 'translation E' and then to the 'rotation-E'
     def project(self,A):
         
-<<<<<<< HEAD
-        # this is 'hacky', but OK - first project to the translation invariant filter, then project that to the rotation invariant.
-=======
         # first project to the translation invariant filter, then project that to the rotation invariant.
-        # this may look to simple, but is OK (see
->>>>>>> refs/remotes/origin/main
+        # this may look to simple, but is OK (compatibility condition holds for non-restricted filters)
         
         A = TranslationNet.project(self,A)
         A = super().project(A)
@@ -713,11 +693,7 @@ class RotoTransNet(RotationNet):
         A = TranslationNet.project_light(self,A)
         A = super().project_light(A)
         return A
-<<<<<<< HEAD
-            
-=======
         
 
->>>>>>> refs/remotes/origin/main
 
         
