@@ -1,6 +1,6 @@
 # Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
 
-This repository contains code used for the experiments in the [paper](https://arxiv.org/abs/2303.13458)
+This repository contains code used for the experiments in the two versions of the [paper](https://arxiv.org/abs/2303.13458)
 
 ```
 @article{flinth2023optEqAug,
@@ -14,20 +14,26 @@ This repository contains code used for the experiments in the [paper](https://ar
 It is mainly released for transparency and reproducibility purposes. Should you find this code useful for your research, please cite the above paper.
 
 ## Description of files in the repository
-* models.py contain the code for building the models used in the experiment. 
+* models.py and networks.py contain the code for building the models used in the experiment. 
 It is built around an abstract class ProjectNet, which is instantiated for the three different group. 
 The ProjectNet stores a number of layers and a method for projecting all layers (and gradients) onto the space E.
 * datasets.py contains code for handling (and generating) data as used in the experiments. 
-* opt_utils contains boiler-plate code for training the MLP:s using the different approaches of the paper. 
-* eval_script.py is a script for evaluating results as stored by the training files.
-* train_permutation.py, train_translation.py, train_rotation.py, train_different_groups.py are training scripts for repeating the experiments in the paper
-* simpshape is the dataset used in the rotation experiment.
-* stochblock is the dataset used for the permutation experiment. 
+* opt_utils.py, trainer_local.py, tester_local.py and mymse.py contains boiler-plate code for training the MLP:s using the different approaches of the paper. 
+* eval_script.py  and plot_experiment_data.py are script for evaluating and plotting results as stored by the training files.
+* eqv_vs_aug_dyn_experiment_local.py, train_permutation.py, train_translation.py, train_rotation.py, train_different_groups.py are training scripts for repeating the experiments in the two versions of the paper
+* simpshape is the dataset used in the rotation experiment in the first paper.
+* stochblock is the dataset used for the permutation experiment in the first paper. 
 
 ### Required and optional libraries
-The package requires the [pytorch](https://pytorch.org/) and [numpy](https://numpy.org/) packages.  [matplotlib](https://matplotlib.org/) is optional: it is only needed for the plots in eval_script.py. Also optional is [cv2](https://pypi.org/project/opencv-python/). It is used also used for the simpshape dataset in datasets.py, but only when generating new datasets. It does not need to be installed if the downloaded dataset is used.
+The package requires the [pytorch](https://pytorch.org/) and [numpy](https://numpy.org/), [math](https://docs.python.org/3/library/math.html), [os](https://docs.python.org/3/library/os.html) and [tqdm](https://tqdm.github.io/)  packages .  [matplotlib](https://matplotlib.org/) is optional: it is only needed for the plots in eval_script.py. Also optional is [cv2](https://pypi.org/project/opencv-python/). It is used also used for the simpshape dataset in datasets.py, but only when generating new datasets. It does not need to be installed if the downloaded dataset is used.
 
 ## Running experiments
+
+### Main experiment
+
+To run the experiment from the paper simply run the file eqv_vs_aug_dyn_experiment_local.py. This may take a while depending on the computer used to run it. If one wishes to run a scaled-down version of the experiment one can go into the code and change the number of experiments and/or the number of training epochs (The corresponding parameters are situated near the top of the code). Note that the number of experiments should be divisible by 3, because there are 3 separate trials which are compared.
+
+### Experiments from the appendix and first version of the paper
 To run an experiment, run one of the training scripts train_permutation.py, train_translation.py or train_rotation.py with arguments augnumber nbr_experiments. 
 Augnumber decides how many passes should be made over the data for the augmented run (in the experiments in the paper, these were set to 25). I.e., to run the permutation experiment as in the paper, run
 
