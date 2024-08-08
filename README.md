@@ -31,7 +31,11 @@ The package requires the [pytorch](https://pytorch.org/) and [numpy](https://num
 
 ### Main experiment
 
-To run the experiment from the paper simply run the file eqv_vs_aug_dyn_experiment_local.py. This may take a while depending on the computer used to run it. If one wishes to run a scaled-down version of the experiment one can go into the code and change the number of experiments and/or the number of training epochs (The corresponding parameters are situated near the top of the code). Note that the number of experiments should be divisible by 3, because there are 3 separate trials which are compared.
+To run the experiment from the paper simply run 
+```
+  python eqv_vs_aug_dyn_experiment_local.py.
+```
+This may take a while depending on the computer used to run it. If one wishes to run a scaled-down version of the experiment one can go into the code and change the number of experiments and/or the number of training epochs (The corresponding parameters are situated near the top of the code). Note that the number of experiments should be divisible by 3, because there are 3 separate trials which are compared.
 
 ### Experiments from the appendix and first version of the paper
 To run an experiment, run one of the training scripts train_permutation.py, train_translation.py or train_rotation.py with arguments augnumber nbr_experiments. 
