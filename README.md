@@ -1,13 +1,13 @@
-# Optimization Dynamics of Equivariant and Augmented Multilayer Perceptrons
+# Optimization Dynamics of Equivariant and Augmented Neural Networks
 
 This repository contains code used for the experiments in the two versions of the [paper](https://arxiv.org/abs/2303.13458)
 
 ```
-@article{flinth2023optEqAug,
+@article{nordenfors2024optEqAug,
   title={Optimization Dynamics of Equivariant and Augmented Neural Networks},
-  author={Flinth, Axel and Ohlsson, Fredrik},
+  author={Nordenfors, Oskar and Ohlsson, Fredrik and Flinth, Axel},
   journal={arXiv:2303.13458},
-  year={2023}
+  year={2024}
 }
 ```
 
